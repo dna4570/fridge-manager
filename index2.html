@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>冷蔵庫食材管理</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #1e2130;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #cdd6f4;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #1e2130;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 0.5px solid #383a59;
+    }
+
+    .header h1 {
+      font-size: 2em;
+      font-weight: 500;
+      color: #cdd6f4;
+      letter-spacing: -0.3px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #6c7086;
+      margin-top: 6px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #252840;
+      border: 0.5px solid #383a59;
+      border-radius: 10px;
+      padding: 13px 18px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      color: #6c7086;
+      margin-right: 8px;
+    }
+
+    select {
+      font-size: 13px;
+      padding: 6px 12px;
+      border: 0.5px solid #383a59;
+      border-radius: 6px;
+      background: #1e2130;
+      color: #cdd6f4;
+      cursor: pointer;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      font-size: 13px;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 6px;
+      background: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #45a049;
+    }
+
+    .accordion {
+      background: #252840;
+      border: 0.5px solid #383a59;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .acc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .acc-header:hover {
+      background: #2e3152;
+    }
+
+    .acc-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #cdd6f4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cat-icon {
+      font-size: 18px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: #3b3f6e;
+      color: #89b4fa;
+    }
+
+    .badge.warn {
+      background: #433520;
+      color: #f9e2af;
+    }
+
+    .acc-arrow {
+      font-size: 11px;
+      color: #6c7086;
+      transition: transform 0.2s;
+    }
+
+    .acc-arrow.open {
+      transform: rotate(180deg);
+    }
+
+    .acc-body {
+      display: none;
+      border-top: 0.5px solid #383a59;
+    }
+
+    .acc-body.open {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      padding: 10px 16px;
+      text-align: left;
+      font-weight: 500;
+      color: #6c7086;
+      background: #1e2130;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    td {
+      padding: 11px 16px;
+      border-top: 0.5px solid #2e3152;
+      color: #cdd6f4;
+    }
+
+    tr:hover td {
+      background: #2a2d45;
+    }
+
+    .id-cell {
+      color: #585b7a;
+      font-size: 12px;
+    }
+
+    .exp-warn {
+      color: #f9e2af;
+      font-weight: 500;
+    }
+
+    .exp-ok {
+      color: #a6e3a1;
+    }
+
+    .status-cell {
+      font-size: 12px;
+      color: #585b7a;
+    }
+
+    .cb {
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      accent-color: #89b4fa;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 0.5px solid #383a59;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .ts {
+      font-size: 12px;
+      color: #585b7a;
+    }
+
+    .dl-btn {
+      font-size: 13px;
+      padding: 10px 22px;
+      background: #89b4fa;
+      color: #1e2130;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .dl-btn:hover {
+      background: #74c7ec;
+    }
+
+    @media(max-width:600px) {
+      .controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      th,
+      td {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧊 冷蔵庫食材管理</h1>
+      <p>Fresh ingredients, organized simply</p>
+    </div>
+    <div class="controls">
+      <div>
+        <span class="filter-label">カテゴリフィルター:</span>
+        <select id="filter">
+          <option value="all">すべて</option>
+          <option value="pending">未使用</option>
+          <option value="done">使用済み</option>
+        </select>
+      </div>
+      <div class="btn-group">
+        <button class="btn" id="expandAllBtn">すべて展開</button>
+        <button class="btn" id="collapseAllBtn">すべて閉じる</button>
+      </div>
+    </div>
+    <main id="list"></main>
+    <footer>
+      <span class="ts">最終更新日時: <span id="ts">—</span></span>
+      <button class="dl-btn" id="downloadCsvBtn">更新（CSVダウンロード）</button>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const icons = { 野菜: '🥦', 肉: '🥩', 魚: '🐟', 乳製品: '🥛', 果物: '🍎', 調味料: '🧂' };
+
+      const dummyCsvData = `食材ID,カテゴリ,食材名,数量,単位,賞味期限,使用済み
+F001,野菜,キャベツ,1,個,2026/03/25,FALSE
+F002,野菜,にんじん,3,本,2026/03/28,FALSE
+F003,野菜,ほうれん草,1,袋,2026/03/22,FALSE
+F004,肉,鶏もも肉,300,g,2026/03/23,FALSE
+F005,肉,豚バラ,200,g,2026/03/24,FALSE
+F006,魚,鮭,2,切,2026/03/22,FALSE
+F007,乳製品,牛乳,1,本,2026/03/26,FALSE
+F008,乳製品,ヨーグルト,2,個,2026/03/24,FALSE
+F009,果物,りんご,3,個,2026/03/30,FALSE
+F010,果物,バナナ,5,本,2026/03/23,FALSE
+F011,調味料,醤油,1,本,2026/12/01,FALSE
+F012,調味料,みりん,1,本,2026/10/15,FALSE`;
+
+      let items = [];
+
+      function parseCsv(csv) {
+        const lines = csv.trim().split("\n");
+        const headers = lines[0].split(",").map(h => h.trim());
+        return lines.slice(1).map(line => {
+          const vals = line.split(",").map(v => v.trim());
+          const obj = {};
+          headers.forEach((h, i) => {
+            let v = vals[i];
+            if (h === "数量") v = parseInt(v, 10);
+            else if (h === "使用済み") v = v.toUpperCase() === "TRUE";
+            obj[h] = v;
+          });
+          return obj;
+        });
+      }
+
+      function isExpiringSoon(exp) {
+        const d = new Date(exp.replace(/\//g, "-"));
+        return (d - new Date()) < 3 * 24 * 60 * 60 * 1000;
+      }
+
+      function render() {
+        const f = document.getElementById("filter").value;
+        const grouped = {};
+        items.forEach(item => {
+          if (f === "pending" && item["使用済み"]) return;
+          if (f === "done" && !item["使用済み"]) return;
+          const cat = item["カテゴリ"];
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(item);
+        });
+        const list = document.getElementById("list");
+        const openCats = Array.from(list.querySelectorAll(".acc-body.open")).map(el => el.dataset.cat);
+        list.innerHTML = "";
+        Object.keys(grouped).sort().forEach(cat => {
+          const catItems = grouped[cat];
+          const pending = catItems.filter(i => !i["使用済み"]).length;
+          const isOpen = openCats.includes(cat);
+          const div = document.createElement("div");
+          div.className = "accordion";
+          div.innerHTML = `
+        <div class="acc-header">
+          <span class="acc-title">
+            <span class="cat-icon">${icons[cat] || '📦'}</span>
+            ${cat}
+            <span class="badge${pending > 0 ? ' warn' : ''}">${pending}件 未使用</span>
+          </span>
+          <span class="acc-arrow${isOpen ? ' open' : ''}">▼</span>
+        </div>
+        <div class="acc-body${isOpen ? ' open' : ''}" data-cat="${cat}">
+          <table>
+            <thead><tr>
+              <th>食材ID</th><th>カテゴリ</th><th>食材名</th><th>数量</th><th>単位</th><th>賞味期限</th><th>状態</th><th></th>
+            </tr></thead>
+            <tbody>${catItems.map(item => `
+              <tr>
+                <td class="id-cell">${item["食材ID"]}</td>
+                <td>${item["カテゴリ"]}</td>
+                <td>${item["食材名"]}</td>
+                <td>${item["数量"]}</td>
+                <td>${item["単位"]}</td>
+                <td class="${isExpiringSoon(item["賞味期限"]) ? 'exp-warn' : 'exp-ok'}">${item["賞味期限"]}${isExpiringSoon(item["賞味期限"]) ? '  ⚠' : ''}</td>
+                <td class="status-cell">${item["使用済み"] ? '済' : '未'}</td>
+                <td><input type="checkbox" class="cb" ${item["使用済み"] ? 'checked' : ''} data-id="${item["食材ID"]}"></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+          div.querySelector(".acc-header").addEventListener("click", () => {
+            const body = div.querySelector(".acc-body");
+            const arrow = div.querySelector(".acc-arrow");
+            body.classList.toggle("open");
+            arrow.classList.toggle("open");
+            arrow.textContent = body.classList.contains("open") ? "▲" : "▼";
+          });
+          div.querySelectorAll(".cb").forEach(cb => {
+            cb.addEventListener("change", e => {
+              const target = items.find(i => i["食材ID"] === e.target.dataset.id);
+              if (target) { target["使用済み"] = e.target.checked; render(); }
+            });
+          });
+          list.appendChild(div);
+        });
+        document.getElementById("ts").textContent = new Date().toLocaleString("ja-JP");
+      }
+
+      function downloadCsv() {
+        const headers = ["食材ID", "カテゴリ", "食材名", "数量", "単位", "賞味期限", "使用済み"];
+        const rows = [headers.join(",")];
+        items.forEach(item => {
+          rows.push(headers.map(h => h === "使用済み" ? (item[h] ? "TRUE" : "FALSE") : String(item[h])).join(","));
+        });
+        const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const now = new Date();
+        const fn = `fridge_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}.csv`;
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fn;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      items = parseCsv(dummyCsvData);
+      render();
+
+      document.getElementById("filter").addEventListener("change", render);
+      document.getElementById("expandAllBtn").addEventListener("click", () => {
+        document.querySelectorAll(".acc-body").forEach(b => b.classList.add("open"));
+        document.querySelectorAll(".acc-arrow").forEach(a => { a.classList.add("open"); a.textContent = "▲"; });
+      });
+      document.getElementById("collapseAllBtn").addEventListener("click", () => {
+        document.querySelectorAll(".acc-body").forEach(b => b.classList.remove("open"));
+        document.querySelectorAll(".acc-arrow").forEach(a => { a.classList.remove("open"); a.textContent = "▼"; });
+      });
+      document.getElementById("downloadCsvBtn").addEventListener("click", downloadCsv);
+    });
+  </script>
+</body>
+
+</html>
